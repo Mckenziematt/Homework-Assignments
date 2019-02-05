@@ -1,0 +1,188 @@
+1. Carry out an exploratory analysis using the tree dataset. Metadata for the tree study can be found here. Specifically, I would like you to develop and compare models for species cover for a habitat generalist Acer rubrum (Red maple) and a habitat specialist Abies fraseri (Frasier fir). Because this dataset includes both continuous and discrete explanatory variables use the function Anova in the packages car as such
+
+```{r}
+tree = read.csv(https://raw.githubusercontent.com/dmcglinn/quant_methods/gh-pages/data/treedata_subset.csv")
+```
+##Tell R load subset file
+
+```{r}
+tree2 = read.csv("https://raw.githubusercontent.com/dmcglinn/quant_methods/gh-pages/data/tree_metadata.txt")
+```
+##tell R to load meta data file
+```{r}
+"Acer rubrum"
+```
+[1] "Acer rubrum"
+##make a string
+```{r}
+trees$species == "Acer rubrum"
+```
+logical(0)
+##look at the species from the tree data set 
+```{r}
+tree$species == "Acer rubrum"
+```
+##tell R to load all the data for Acer rubrum
+```{r}
+acer = tree[tree$species == "Acer rubrum", ]
+```
+##tell R to make an subset of the tree data set from the species column for acer rubrum
+```{r}
+"Abies fraseri"
+```
+##this tells R to set Abies fraseri as a string
+```{r}
+tree$species == "Abies fraseri"
+```
+##tell R to bring up the abies species data in the tree folder
+```{r}
+abies = tree[tree$species == "Abies fraseri", ]
+```
+##This turned the data from Abies fraseri into a subset of the tree data
+
+provides a summary of p values for acer and abies
+
+For each species address the following additional questions:
+```{r}
+acer_mod = lm (acer$cover ~ acer$elev + acer$tci + acer$streamdist + acer$disturb + acer$beers) 
+summary(acer_mod)
+```
+Call:
+lm(formula = acer$cover ~ acer$elev + acer$tci + acer$streamdist + 
+    acer$disturb + acer$beers)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.7073 -1.2446  0.3409  1.3575  5.2732 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)         6.3502303  0.4564973  13.911  < 2e-16 ***
+acer$elev          -0.0010108  0.0003161  -3.197  0.00145 ** 
+acer$tci           -0.0627613  0.0351922  -1.783  0.07495 .  
+acer$streamdist     0.0012895  0.0004756   2.712  0.00686 ** 
+acer$disturbLT-SEL  0.0829610  0.2166747   0.383  0.70192    
+acer$disturbSETTLE -0.1044556  0.2804213  -0.372  0.70963    
+acer$disturbVIRGIN  0.3088364  0.2518161   1.226  0.22044    
+acer$beers         -0.3269597  0.1089662  -3.001  0.00279 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.989 on 715 degrees of freedom
+Multiple R-squared:  0.04493,	Adjusted R-squared:  0.03558 
+F-statistic: 4.805 on 7 and 715 DF,  p-value: 2.669e-05
+```{r}
+Anova(acer_mod, type=3)
+```
+Anova Table (Type III tests)
+
+Response: acer$cover
+                 Sum Sq  Df  F value    Pr(>F)    
+(Intercept)      765.43   1 193.5096 < 2.2e-16 ***
+acer$elev         40.44   1  10.2233  0.001448 ** 
+acer$tci          12.58   1   3.1805  0.074947 .  
+acer$streamdist   29.09   1   7.3531  0.006856 ** 
+acer$disturb       9.45   3   0.7962  0.496166    
+acer$beers        35.61   1   9.0034  0.002789 ** 
+Residuals       2828.21 715                       
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+QUESTIONS:
+how well does the exploratory model appear to explain cover?
+##The anova test gives a significance code of .001 and the summary of acer gives a pvalue of 2.669e-05
+## It also provides other confounding variables and their significance to the results
+which explanatory variables are the most important?
+##pvalues and t-stat
+## acer$streamdist and acer$disturbVIRGIN
+do model diagnostics indicate any problems with violations of OLS assumptions?
+##Yes because many science has a tendency to report analysis in favor of a particular hypothesis
+##And also the tendency to report only statistics that are significant
+are you able to explain variance in one species better than another, why might this be the case?
+## The t-value measures the size of the difference relative to the variation in your sample data
+##the variables that represent significant t values becuase these represent the greater evidence against the null
+## acer$streamdist and acer$disturbVIRGIN
+```{r}
+abies_mod = lm (abies$cover ~ abies$elev + abies$tci + abies$streamdist + abies$disturb + abies$beers) 
+summary(abies_mod)
+```
+Call:
+lm(formula = abies$cover ~ abies$elev + abies$tci + abies$streamdist + 
+    abies$disturb + abies$beers)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.4630 -0.6472  0.0788  1.0872  3.8017 
+
+Coefficients:
+                      Estimate Std. Error t value Pr(>|t|)    
+(Intercept)         -20.561173   4.271449  -4.814 2.65e-05 ***
+abies$elev            0.012370   0.002523   4.903 2.02e-05 ***
+abies$tci             0.287641   0.193467   1.487   0.1458    
+abies$streamdist     -0.001266   0.001585  -0.799   0.4296    
+abies$disturbLT-SEL   2.188367   2.097905   1.043   0.3038    
+abies$disturbSETTLE   1.527604   2.341471   0.652   0.5183    
+abies$disturbVIRGIN   3.025596   1.735921   1.743   0.0899 .  
+abies$beers           0.037551   0.500269   0.075   0.9406    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.601 on 36 degrees of freedom
+Multiple R-squared:  0.5824,	Adjusted R-squared:  0.5011 
+F-statistic: 7.171 on 7 and 36 DF,  p-value: 2.215e-05
+```{r}
+Anova(abies_mod, type=3)
+```
+Anova Table (Type III tests)
+
+Response: abies$cover
+                 Sum Sq Df F value    Pr(>F)    
+(Intercept)      59.401  1 23.1710 2.652e-05 ***
+abies$elev       61.618  1 24.0358 2.022e-05 ***
+abies$tci         5.667  1  2.2105    0.1458    
+abies$streamdist  1.636  1  0.6382    0.4296    
+abies$disturb    10.089  3  1.3118    0.2855    
+abies$beers       0.014  1  0.0056    0.9406    
+Residuals        92.289 36                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+QUESTIONS:
+how well does the exploratory model appear to explain cover?
+# It explains cover well by providing a .001 significance level and in summary has a p value of 2.215e-05
+## It also provides other confounding variables and their significance to the results
+which explanatory variables are the most important?
+## pvalues and t-stat
+##abies$elev and abies$tci and abies$disturbLT-SEL and abies$disturbVIRGIN
+do model diagnostics indicate any problems with violations of OLS assumptions?
+##Yes because many science has a tendency to report analysis in favor of a particular hypothesis
+##And also the tendency to report only statistics that are significant
+are you able to explain variance in one species better than another, why might this be the case?
+## The t-value measures the size of the difference relative to the variation in your sample data
+##the variables that represent significant t values becuase these represent the greater evidence against the null
+## abies$elev and abies$tci and abies$disturbLT-SEL and abies$disturbVIRGIN
+
+2. You may have noticed that the variable cover is defined as positive integers between 1 and 10. and is therefore better treated as a discrete rather than continuous variable. Re-examine your solutions to the question above but from the perspective of a General Linear Model (GLM) with a Poisson error term (rather than a Gaussian one as in OLS). The Poisson distribution generates integers 0 to positive infinity so this may provide a good first approximation. Your new model calls will look as follows:
+```{r}
+acer_poi = glm(cover ~ tci + elev + tci + streamdist + disturb + beers, data = acer, 
+               family='poisson')
+```
+
+```{r}
+abies_poi = glm(cover ~ tci + elev + tci + streamdist + disturb + beers, data = abies, 
+               family='poisson')
+```
+
+```{r}
+pseudo_r2 = function(glm_mod) {
+                1 -  glm_mod$deviance / glm_mod$null.deviance
+}
+```
+#***could not run function**
+Compare your qualatitive assessment of which variables were most important in each model. Does it appear that changing the error distribution changed the results much? In what ways?
+
+
+3. Provide a plain English summary (i.e., no statistics) of what you have found and what conclusions we can take away from your analysis?
+#From this analysis we have found that the cover variable of data sets abies and acer both have significant p values for the vegetation data of trees in the Great Smokey Mountains National Park. Therfore we can reject the null that cover and vegetation are independent of one another. However, because of our analysis on other confounding variables we must report t-stats and p-values for them as well. Additionally, we can use the r2 function to correct these issues without having to perform an anova test and dig through results. The R2 function will do this for us. 
+
+
