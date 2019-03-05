@@ -1,0 +1,76 @@
+---
+title: "Spatial Models HW"
+output: html_document
+---
+
+```{r}
+library(vegan)
+data(BCI)
+## UTM Coordinates (in metres)
+BCI_xy = data.frame(x = rep(seq(625754, 626654, by=100), each=5), 
+                    y = rep(seq(1011569,  1011969, by=100), len=50))
+
+data("BCI.env")
+install.packages("nlme")
+
+```
+1) Examine if there is evidence of spatial dependence in a rare and a common species in the BCI tree dataset
+```{r}
+#Make a histogram
+abundance = apply(BCI, 2, sum)
+
+hist(log10(abundance))
+#This gives me a histogram brug makes the data easier to read
+#0 =1, 1= 10, 2=100
+#I need to set my rare and common species by separating the two groups as >or = 2 and less than 2
+plot(BCI_xy, cex=sr/max(sr))
+
+col_brks = hist(abundance, plot=F)$breaks
+col_indices = as.numeric(cut(abundance, col_brks))
+cols = rev(terrain.colors(length(col_brks)))
+plot(BCI_xy, cex=2, pch=19, col=cols[col_indices]) + 
+```
+#there is no shown evidence of autocorrelation and induced spatial dependence from the first plot
+##However, the second plot does show that our different BCI sites are somewhat clustered together
+```{r}
+glm()
+```
+
+2) Build two generalized linear models to predict the abundance of the species Drypetes standleyi using the abundance of other tree species in the study site. Specifically examine the following species as predictor variables:
+
+Model 1: only include a single species as a predictor variable
+```{r}
+sp_ids = c("Cordia.lasiocalyx", "Hirtella.triandra",
+           "Picramnia.latifolia", "Quassia.amara",
+           "Tabernaemontana.arborea", "Trattinnickia.aspera", 
+           "Xylopia.macrantha")
+glm(Drypetes.standleyi ~ Cordia.lasiocalyx, data = BCI)
+#This shows 49 degrees of freedom
+plot(Variogram(BCI, form= ~ x + y))
+```
+Model 2: include all of the species as predictor variables
+```{r}
+glm(Drypetes.standleyi ~ sp, data = BCI)
+```
+
+With both models examine the spatial dependence of the residuals using the function Variogram. Model the spatial dependence in the residuals using one of the error structures available.
+```{r}
+sr_dat = data.frame(sr, BCI.env, BCI_xy)
+
+sr_lm = gls(sr ~ SubsDens, data=sr_dat)
+
+par(mfrow=c(1,1))
+plot(Variogram(sr_lm, form= ~ x + y))
+```
+
+```{r}
+BCI_rda = rda(BCI, BCI.env[ , 1:2])
+
+plot(BCI_rda, display=c('sp', 'bp'))
+```
+
+Did including the spatial error term have a large impact on the coefficients of the model?
+
+Did including the spatial error terms significantly improve model fit (use function anova to carry out model comparison)?
+
+Explain why you did or did not observe a difference in the influence of adding the spatial error term between the two models.
